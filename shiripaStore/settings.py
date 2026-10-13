@@ -1,4 +1,4 @@
-"""
+﻿"""
 Django settings for shiripaStore project.
 """
 import os
@@ -6,23 +6,11 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Carga variables desde un archivo .env si existe (ver .env.example).
-# No falla si python-dotenv no está instalado o el .env no existe.
 try:
     from dotenv import load_dotenv
     load_dotenv(BASE_DIR / ".env")
 except ImportError:
     pass
-
-# ---------------------------------------------------------------------------
-# Seguridad
-#
-# ANTES: SECRET_KEY estaba escrita en texto plano en este archivo y
-# versionada en el repositorio, DEBUG=True fijo y ALLOWED_HOSTS=['*'].
-# AHORA: se leen desde variables de entorno (ver .env.example). Si no
-# existen, se usan valores de desarrollo que NUNCA deben usarse en
-# producción real.
-# ---------------------------------------------------------------------------
 
 SECRET_KEY = os.environ.get(
     "DJANGO_SECRET_KEY",
@@ -34,9 +22,15 @@ DEBUG = os.environ.get("DJANGO_DEBUG", "True") == "True"
 ALLOWED_HOSTS = [
     h.strip() for h in os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",") if h.strip()
 ]
+if os.environ.get("VERCEL"):
+    ALLOWED_HOSTS.append(".vercel.app")
 
+CSRF_TRUSTED_ORIGINS = [
+    o.strip() for o in os.environ.get("DJANGO_CSRF_TRUSTED_ORIGINS", "").split(",") if o.strip()
+]
+if os.environ.get("VERCEL"):
+    CSRF_TRUSTED_ORIGINS.append("https://*.vercel.app")
 
-# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -50,6 +44,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -63,12 +58,6 @@ ROOT_URLCONF = 'shiripaStore.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        # Solo se declara el directorio de proyecto para templates que son
-        # realmente globales (p.ej. registration/login.html de auth). Las
-        # plantillas propias de la tienda viven en venta/templates/venta/
-        # y se descubren solas gracias a APP_DIRS=True. Antes existían
-        # DOS copias idénticas (una en /templates/venta y otra en
-        # /venta/templates/venta) que había que mantener sincronizadas a mano.
         'DIRS': [BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -77,9 +66,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                # Permite que el navbar muestre el total del carrito en
-                # cualquier plantilla sin tener que pasarlo manualmente
-                # desde cada vista.
                 'venta.context_processors.carrito_total',
             ],
         },
@@ -93,12 +79,23 @@ LOGOUT_REDIRECT_URL = 'index'
 WSGI_APPLICATION = 'shiripaStore.wsgi.application'
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if os.environ.get("DATABASE_URL"):
+    import dj_database_url
+
+    DATABASES = {
+        "default": dj_database_url.parse(
+            os.environ["DATABASE_URL"],
+            conn_max_age=600,
+            ssl_require=True,
+        )
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -116,5 +113,19 @@ USE_TZ = True
 
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": (
+            "whitenoise.storage.CompressedManifestStaticFilesStorage"
+            if not DEBUG
+            else "django.contrib.staticfiles.storage.StaticFilesStorage"
+        ),
+    },
+}
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
