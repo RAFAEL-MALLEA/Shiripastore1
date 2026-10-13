@@ -1,0 +1,63 @@
+{% extends "venta/base.html" %}
+{% load static %}
+{% load money %}
+{% block titulo %}Carrito{% endblock %}
+
+{% block contenido %}
+<div class="container mt-5 pt-3">
+  <h1 class="mb-4">Mi carrito</h1>
+
+  {% if items %}
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Precio</th>
+          <th style="width: 140px;">Cantidad</th>
+          <th>Subtotal</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+        <tr>
+          <td>{{ item.producto.nombre_juego }}</td>
+          <td>${{ item.producto.valor|clp }}</td>
+          <td>
+            <form method="post" action="{% url 'carrito_actualizar' item.producto.Id_juego %}" class="d-flex">
+              {% csrf_token %}
+              <input type="number" name="cantidad" value="{{ item.cantidad }}" min="1" max="{{ item.producto.stock }}" class="form-control form-control-sm">
+              <button type="submit" class="btn btn-sm btn-outline-secondary ms-1">↻</button>
+            </form>
+          </td>
+          <td>${{ item.subtotal|clp }}</td>
+          <td>
+            <a href="{% url 'carrito_quitar' item.producto.Id_juego %}" class="btn btn-sm btn-outline-danger">Quitar</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr>
+          <th colspan="3" class="text-end">Total</th>
+          <th>${{ total|clp }}</th>
+          <th></th>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <div class="text-end">
+    <a href="{% url 'tienda' %}" class="btn btn-outline-primary">Seguir comprando</a>
+    <a href="{% url 'checkout' %}" class="btn btn-success">Ir a pagar</a>
+  </div>
+
+  {% else %}
+  <div class="text-center py-5">
+    <p class="lead">Tu carrito está vacío.</p>
+    <a href="{% url 'tienda' %}" class="btn btn-primary">Ir a la tienda</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

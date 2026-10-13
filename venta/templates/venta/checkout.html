@@ -1,0 +1,51 @@
+{% extends "venta/base.html" %}
+{% load money %}
+{% block titulo %}Pago{% endblock %}
+
+{% block contenido %}
+<div class="container mt-5 pt-3">
+  <h1 class="mb-3">Confirmar compra</h1>
+
+  <div class="alert alert-warning">
+    <strong>Checkout simulado.</strong> Esta tienda no está conectada a ninguna pasarela de pago real
+    (Webpay, Mercado Pago, Stripe, etc.). Al confirmar, se generará tu pedido y boleta, pero no se
+    realizará ningún cobro real.
+  </div>
+
+  <div class="table-responsive mb-4">
+    <table class="table">
+      <thead>
+        <tr><th>Producto</th><th>Cantidad</th><th>Subtotal</th></tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+        <tr>
+          <td>{{ item.producto.nombre_juego }}</td>
+          <td>{{ item.cantidad }}</td>
+          <td>${{ item.subtotal|clp }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr><th colspan="2" class="text-end">Total</th><th>${{ total|clp }}</th></tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="row g-3 mb-4">
+      <div class="col-md-6">
+        <label class="form-label">Nombre en la tarjeta (simulado)</label>
+        <input type="text" class="form-control" value="{{ request.user.get_full_name|default:request.user.username }}" disabled>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Número de tarjeta (simulado)</label>
+        <input type="text" class="form-control" value="4051 8856 0044 6623" disabled>
+      </div>
+    </div>
+    <button type="submit" class="btn btn-success btn-lg">Confirmar pago simulado — ${{ total|clp }}</button>
+    <a href="{% url 'carrito' %}" class="btn btn-outline-secondary btn-lg">Volver al carrito</a>
+  </form>
+</div>
+{% endblock %}

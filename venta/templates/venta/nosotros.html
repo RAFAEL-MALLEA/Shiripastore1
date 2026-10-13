@@ -1,0 +1,87 @@
+{% extends "venta/base.html" %}
+{% load static %}
+{% block titulo %}Sobre nosotros{% endblock %}
+
+{% block contenido %}
+  <section class="container mt-5 pt-5">
+    <div class="row g-3 fila">
+      <div class="col-12">
+        <h1 class="display-4 text-center mb-4">Sobre Shiripa Store</h1>
+        <h5>Shiripa Store es un emprendimiento de juegos digitales procedente de la región de Valparaíso, Chile.</h5>
+        <p>Esta tienda comenzó en 2023 con dos integrantes, ambos programadores, con la ambición de crear un
+          proyecto de calidad y ofrecer los juegos más modernos del mercado actual, con títulos conocidos como
+          Hogwarts Legacy, Star Wars: Jedi Survivor, Street Fighter 6, entre otros.</p>
+      </div>
+    </div>
+
+    <div class="row mt-5 pt-5">
+      <div class="col-12 col-md-12 col-lg-4">
+        <div class="card border-light shadow text-center pb-2">
+          <div class="card-body">
+            <i class="fa-solid fa-certificate fa-2xl pb-5"></i>
+            <h4 class="card-title">Calidad</h4>
+            <p class="lead">Nos aseguramos de que nuestros clientes reciban un servicio excepcional, con atención
+              al cliente amable y eficiente y una política clara de devolución de productos.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-md-12 col-lg-4">
+        <div class="card border-light shadow text-center pb-2">
+          <div class="card-body">
+            <i class="fa-solid fa-robot fa-2xl pb-5"></i>
+            <h4 class="card-title">Automatización</h4>
+            <p class="lead">Nuestro sistema registra cada compra al instante, dejando el código del juego
+              disponible de inmediato en tu cuenta.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-md-12 col-lg-4">
+        <div class="card border-light shadow text-center pb-2">
+          <div class="card-body">
+            <i class="fa-solid fa-gears fa-2xl pb-5"></i>
+            <h4 class="card-title">Profesionalismo</h4>
+            <p class="lead">Nuestro equipo está capacitado para resolver cualquier duda o consulta, a través de
+              varios canales de comunicación disponibles en la sección de contacto.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="container mt-5 pt-5">
+    <h1 class="display-3 text-center">Empresas con las que trabajamos</h1>
+  </div>
+
+  <!--
+    ANTES: esta tabla se llenaba con una llamada AJAX a un servidor mock
+    personal (my-json-server.typicode.com/MiguelThomasGrupo10/...) que
+    dependía de un repositorio externo ajeno al proyecto y de un plugin
+    jQuery Validate que ni siquiera estaba cargado en la página.
+    AHORA: se renderiza directamente en el servidor (datos fijos, sin
+    dependencias externas frágiles).
+  -->
+  <section class="container mb-5">
+    <div class="row">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Nombre</th>
+            <th>Colaboración desde</th>
+            <th>Descripción</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for empresa in empresas %}
+          <tr>
+            <td>{{ empresa.id }}</td>
+            <td>{{ empresa.nombre }}</td>
+            <td>{{ empresa.fecha }}</td>
+            <td>{{ empresa.descripcion }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "venta/base.html" %}
+{% block titulo %}Ingreso al sistema{% endblock %}
+
+{% block contenido %}
+<div class="container mt-5 pt-3">
+  <div class="row">
+    <div class="col-12 col-md-6 offset-md-3">
+      <div class="card">
+        <div class="card-body">
+          <h2>Ingresa tus credenciales</h2>
+          <hr>
+          <form method="post" class="my-4">
+            {% csrf_token %}
+            {% if form.errors %}
+            <div class="alert alert-danger">Usuario o contraseña incorrectos.</div>
+            {% endif %}
+            <div class="mb-3">
+              <label for="id_username" class="form-label">Usuario</label>
+              {{ form.username }}
+            </div>
+            <div class="mb-3">
+              <label for="id_password" class="form-label">Contraseña</label>
+              {{ form.password }}
+            </div>
+            <button type="submit" class="btn btn-success float-end">Ingresar</button>
+          </form>
+          <p>¿No tienes cuenta? <a href="{% url 'formRegistro' %}">Regístrate aquí</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

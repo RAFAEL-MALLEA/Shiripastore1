@@ -1,0 +1,28 @@
+{% extends "venta/base.html" %}
+{% block titulo %}Administrador{% endblock %}
+
+{% block contenido %}
+<section class="container mt-4">
+  <h3 class="mb-3">Panel de administración | {{ user.username }}</h3>
+  <!--
+    ANTES: la plantilla ocultaba botones comparando el nombre de usuario
+    contra el texto fijo "admin", pero NO protegía las URLs reales
+    (ver corrección en views.py: ahora todas estas vistas exigen
+    user.is_staff en el servidor, no solo en la plantilla).
+  -->
+  <div class="row">
+    <div class="col-md-3 mb-3">
+      <a href="{% url 'crud_plataformas' %}" class="btn btn-primary btn-lg w-100">Lista de Plataformas</a>
+    </div>
+    <div class="col-md-3 mb-3">
+      <a href="{% url 'crud_categorias' %}" class="btn btn-primary btn-lg w-100">Lista de Categorías</a>
+    </div>
+    <div class="col-md-3 mb-3">
+      <a href="{% url 'crud_colecciones' %}" class="btn btn-primary btn-lg w-100">Lista de Colecciones</a>
+    </div>
+    <div class="col-md-3 mb-3">
+      <a href="{% url 'crud_inventario' %}" class="btn btn-primary btn-lg w-100">Lista de Inventario</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "venta/base.html" %}
+{% load money %}
+{% block titulo %}Inventario{% endblock %}
+{% block contenido %}
+<section class="container mt-4">
+  <h2 class="mb-3">Inventario</h2>
+  <form method="get" class="d-flex gap-2 mb-3" style="max-width: 400px;">
+    <input type="text" name="buscar" class="form-control" placeholder="Buscar juego..." value="{{ request.GET.buscar }}">
+    <button type="submit" class="btn btn-outline-primary">Buscar</button>
+  </form>
+  <div class="d-grid gap-2 d-md-flex justify-content-md-end mb-3">
+    <a href="{% url 'inventarioAdd' %}" class="btn btn-outline-success">Agregar juego</a>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-light table-hover">
+      <thead>
+        <tr>
+          <th>Juego</th><th>Categoría</th><th>Plataforma</th><th>Colección</th>
+          <th>Valor</th><th>Stock</th><th>Disponible</th><th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for tmp in inventario %}
+        <tr>
+          <td>{{ tmp.nombre_juego }}</td>
+          <td>{{ tmp.Id_categoria }}</td>
+          <td>{{ tmp.Id_plataforma }}</td>
+          <td>{{ tmp.Id_coleccion }}</td>
+          <td>${{ tmp.valor|clp }}</td>
+          <td>{{ tmp.stock }}</td>
+          <td>
+            {% if tmp.disponible %}<span class="badge bg-success">Sí</span>
+            {% else %}<span class="badge bg-secondary">No</span>{% endif %}
+          </td>
+          <td class="text-end">
+            <a class="btn btn-sm btn-outline-warning" href="{% url 'inventarioFindEdit' pk=tmp.Id_juego %}">Modificar</a>
+            <a class="btn btn-sm btn-outline-danger" href="{% url 'inventario_del' pk=tmp.Id_juego %}"
+               onclick="return confirm('¿Eliminar este juego?');">Eliminar</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="8">No hay juegos registrados.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <a class="btn btn-outline-primary" href="{% url 'administrador' %}">Volver</a>
+</section>
+{% endblock %}

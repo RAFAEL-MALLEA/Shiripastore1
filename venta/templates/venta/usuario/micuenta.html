@@ -1,0 +1,47 @@
+{% extends "venta/base.html" %}
+{% load money %}
+{% block titulo %}Mi cuenta{% endblock %}
+
+{% block contenido %}
+<!--
+  ANTES: esta página era un formulario de login FALSO (action="#"
+  method="get"), totalmente desconectado del sistema de autenticación
+  real de Django. No validaba ni iniciaba sesión de nadie.
+  AHORA: la vista está protegida con @login_required, así que si no has
+  iniciado sesión Django te redirige automáticamente al login real
+  (/accounts/login/). Aquí solo se muestra el historial de compras.
+-->
+<div class="container mt-5 pt-3">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Hola, {{ request.user.first_name|default:request.user.username }}</h1>
+    <form method="post" action="{% url 'logout' %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-outline-danger">Cerrar sesión</button>
+    </form>
+  </div>
+
+  <h4>Mis pedidos</h4>
+  {% if pedidos %}
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr><th>Boleta</th><th>Fecha</th><th>Total</th><th>Estado</th><th></th></tr>
+      </thead>
+      <tbody>
+        {% for pedido in pedidos %}
+        <tr>
+          <td>{{ pedido.codigo_boleta }}</td>
+          <td>{{ pedido.fecha|date:"d/m/Y H:i" }}</td>
+          <td>${{ pedido.total|clp }}</td>
+          <td>{{ pedido.get_estado_display }}</td>
+          <td><a href="{% url 'boleta' pedido.id %}" class="btn btn-sm btn-outline-primary">Ver boleta</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="lead">Todavía no tienes pedidos. <a href="{% url 'tienda' %}">Ve a la tienda</a>.</p>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "venta/base.html" %}
+{% block titulo %}Plataformas{% endblock %}
+{% block contenido %}
+<section class="container mt-4">
+  <h2 class="mb-3">Plataformas</h2>
+  <form method="get" class="d-flex gap-2 mb-3" style="max-width: 400px;">
+    <input type="text" name="buscarplat" class="form-control" placeholder="Buscar plataforma..." value="{{ request.GET.buscarplat }}">
+    <button type="submit" class="btn btn-outline-primary">Buscar</button>
+  </form>
+  <div class="d-grid gap-2 d-md-flex justify-content-md-end mb-3">
+    <a href="{% url 'plataformasAdd' %}" class="btn btn-outline-success">Agregar plataforma</a>
+  </div>
+  <table class="table table-light table-hover">
+    <tbody>
+      {% for tmp in plataformas %}
+      <tr>
+        <td class="fs-5 align-middle">{{ tmp.plataforma }}</td>
+        <td class="text-end">
+          <a class="btn btn-outline-warning" href="{% url 'plataformas_edit' pk=tmp.Id_plataforma %}">Modificar</a>
+          <a class="btn btn-outline-danger" href="{% url 'plataformas_del' pk=tmp.Id_plataforma %}"
+             onclick="return confirm('¿Eliminar esta plataforma?');">Eliminar</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td>No hay plataformas registradas.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <a class="btn btn-outline-primary" href="{% url 'administrador' %}">Volver</a>
+</section>
+{% endblock %}

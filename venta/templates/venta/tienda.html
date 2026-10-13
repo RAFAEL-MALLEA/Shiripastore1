@@ -1,0 +1,64 @@
+{% extends "venta/base.html" %}
+{% load static %}
+{% load money %}
+{% block titulo %}Tienda{% endblock %}
+
+{% block contenido %}
+<div class="container mt-5 pt-3">
+  <h1 class="text-center mb-4">Catálogo</h1>
+
+  <form method="get" class="row g-2 justify-content-center mb-4">
+    <div class="col-auto">
+      <select name="categoria" class="form-select" onchange="this.form.submit()">
+        <option value="">Todas las categorías</option>
+        {% for c in categorias %}
+        <option value="{{ c.Id_categoria }}" {% if categoria_sel == c.Id_categoria|stringformat:"s" %}selected{% endif %}>{{ c.categoria }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-auto">
+      <select name="plataforma" class="form-select" onchange="this.form.submit()">
+        <option value="">Todas las plataformas</option>
+        {% for p in plataformas %}
+        <option value="{{ p.Id_plataforma }}" {% if plataforma_sel == p.Id_plataforma|stringformat:"s" %}selected{% endif %}>{{ p.plataforma }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    {% if categoria_sel or plataforma_sel %}
+    <div class="col-auto">
+      <a href="{% url 'tienda' %}" class="btn btn-outline-secondary">Limpiar filtros</a>
+    </div>
+    {% endif %}
+  </form>
+
+  <div class="row g-4">
+    {% for producto in productos %}
+    <div class="col-12 col-md-6 col-lg-4 col-xl-3">
+      <div class="card h-100 shadow-sm">
+        {% if producto.imagen %}
+        <img src="{% static 'IMG/' %}{{ producto.imagen }}" class="card-img-top" alt="{{ producto.nombre_juego }}">
+        {% else %}
+        <img src="{% static 'IMG/Logo_Borde_Azul.png' %}" class="card-img-top p-4" alt="{{ producto.nombre_juego }}">
+        {% endif %}
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title">{{ producto.nombre_juego }}</h5>
+          <p class="card-text text-muted mb-1">{{ producto.Id_plataforma }} · {{ producto.Id_categoria }}</p>
+          <p class="card-text fw-bold fs-5">${{ producto.valor|clp }}</p>
+          <p class="card-text"><small class="text-muted">Stock: {{ producto.stock }}</small></p>
+          <form method="post" action="{% url 'carrito_agregar' producto.Id_juego %}" class="mt-auto d-flex gap-2">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{% url 'tienda' %}">
+            <input type="number" name="cantidad" value="1" min="1" max="{{ producto.stock }}" class="form-control" style="width: 5rem;">
+            <button type="submit" class="btn btn-primary flex-grow-1">Añadir al carrito</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5">
+      <p class="lead">No hay productos disponibles con ese filtro por el momento.</p>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

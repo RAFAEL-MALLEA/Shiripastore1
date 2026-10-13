@@ -1,0 +1,27 @@
+{% extends "venta/base.html" %}
+{% block titulo %}Colecciones{% endblock %}
+{% block contenido %}
+<section class="container mt-4">
+  <h2 class="mb-3">Colecciones</h2>
+  <div class="d-grid gap-2 d-md-flex justify-content-md-end mb-3">
+    <a href="{% url 'coleccionesAdd' %}" class="btn btn-outline-success">Agregar colección</a>
+  </div>
+  <table class="table table-light table-hover">
+    <tbody>
+      {% for tmp in colecciones %}
+      <tr>
+        <td class="fs-5 align-middle">{{ tmp.coleccion }}</td>
+        <td class="text-end">
+          <a class="btn btn-outline-warning" href="{% url 'colecciones_edit' pk=tmp.Id_coleccion %}">Modificar</a>
+          <a class="btn btn-outline-danger" href="{% url 'colecciones_del' pk=tmp.Id_coleccion %}"
+             onclick="return confirm('¿Eliminar esta colección?');">Eliminar</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td>No hay colecciones registradas.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <a class="btn btn-outline-primary" href="{% url 'administrador' %}">Volver</a>
+</section>
+{% endblock %}
